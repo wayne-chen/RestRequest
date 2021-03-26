@@ -75,7 +75,7 @@ public:
         return req;
     }
 
-    RestRequest put (const String& endpoint)
+    RestRequest put (const juce::String& endpoint)
     {
         RestRequest req (*this);
         req.verb = "PUT";
@@ -124,7 +124,7 @@ private:
     juce::DynamicObject fields;
     juce::String bodyAsString;
 
-    Result checkInputStream (std::unique_ptr<juce::InputStream>& input)
+    juce::Result checkInputStream (std::unique_ptr<juce::InputStream>& input)
     {
         if (! input) return juce::Result::fail ("HTTP request failed, check your internet connection");
         return juce::Result::ok();
