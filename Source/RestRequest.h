@@ -11,23 +11,25 @@
 #ifndef RESTREQUEST_H_INCLUDED
 #define RESTREQUEST_H_INCLUDED
 
+#include <juce_core/juce_core.h>
+
 class RestRequest
 {
 public:
 
-    RestRequest (String urlString) : url (urlString) {}
-    RestRequest (URL url)          : url (url) {}
+    RestRequest (juce::String urlString) : url (urlString) {}
+    RestRequest (juce::URL url)          : url (url) {}
     RestRequest () {}
 
     struct Response
     {
-        Result result;
-        StringPairArray headers;
-        var body;
-        String bodyAsString;
+        juce::Result result;
+        juce::StringPairArray headers;
+        juce::var body;
+        juce::String bodyAsString;
         int status;
 
-        Response() : result (Result::ok()), status (0) {} // not sure about using Result if we have to initialise it to ok...
+        Response() : result (juce::Result::ok()), status (0) {} // not sure about using Result if we have to initialise it to ok...
     } response;
 
 
@@ -43,19 +45,19 @@ public:
             urlRequest = urlRequest.withPOSTData (output.toString());
         }
 
-        std::unique_ptr<InputStream> input (urlRequest.createInputStream (hasFields, nullptr, nullptr, stringPairArrayToHeaderString(headers), 0, &response.headers, &response.status, 5, verb));
+        std::unique_ptr<juce::InputStream> input (urlRequest.createInputStream (hasFields, nullptr, nullptr, stringPairArrayToHeaderString(headers), 0, &response.headers, &response.status, 5, verb));
 
         response.result = checkInputStream (input);
         if (response.result.failed()) return response;
 
         response.bodyAsString = input->readEntireStreamAsString();
-        response.result = JSON::parse(response.bodyAsString, response.body);
+        response.result = juce::JSON::parse(response.bodyAsString, response.body);
 
         return response;
     }
 
 
-    RestRequest get (const String& endpoint)
+    RestRequest get (const juce::String& endpoint)
     {
         RestRequest req (*this);
         req.verb = "GET";
@@ -64,7 +66,7 @@ public:
         return req;
     }
 
-    RestRequest post (const String& endpoint)
+    RestRequest post (const juce::String& endpoint)
     {
         RestRequest req (*this);
         req.verb = "POST";
@@ -82,7 +84,7 @@ public:
         return req;
     }
 
-    RestRequest del (const String& endpoint)
+    RestRequest del (const juce::String& endpoint)
     {
         RestRequest req (*this);
         req.verb = "DELETE";
@@ -91,46 +93,46 @@ public:
         return req;
     }
 
-    RestRequest field (const String& name, const var& value)
+    RestRequest field (const juce::String& name, const juce::var& value)
     {
         fields.setProperty(name, value);
         return *this;
     }
 
-    RestRequest header (const String& name, const String& value)
+    RestRequest header (const juce::String& name, const juce::String& value)
     {
         RestRequest req (*this);
         headers.set (name, value);
         return req;
     }
 
-    const URL& getURL() const
+    const juce::URL& getURL() const
     {
         return url;
     }
 
-    const String& getBodyAsString() const
+    const juce::String& getBodyAsString() const
     {
         return bodyAsString;
     }
 
 private:
-    URL url;
-    StringPairArray headers;
-    String verb;
-    String endpoint;
-    DynamicObject fields;
-    String bodyAsString;
+    juce::URL url;
+    juce::StringPairArray headers;
+    juce::String verb;
+    juce::String endpoint;
+    juce::DynamicObject fields;
+    juce::String bodyAsString;
 
-    Result checkInputStream (std::unique_ptr<InputStream>& input)
+    Result checkInputStream (std::unique_ptr<juce::InputStream>& input)
     {
-        if (! input) return Result::fail ("HTTP request failed, check your internet connection");
-        return Result::ok();
+        if (! input) return juce::Result::fail ("HTTP request failed, check your internet connection");
+        return juce::Result::ok();
     }
 
-    static String stringPairArrayToHeaderString(StringPairArray stringPairArray)
+    static juce::String stringPairArrayToHeaderString(juce::StringPairArray stringPairArray)
     {
-        String result;
+        juce::String result;
         for (auto key : stringPairArray.getAllKeys())
         {
             result += key + ": " + stringPairArray.getValue(key, "") + "\n";
