@@ -39,7 +39,7 @@ public:
         bool hasFields = (fields.getProperties().size() > 0);
         if (hasFields)
         {
-            MemoryOutputStream output;
+            juce::MemoryOutputStream output;
 
             fields.writeAsJSON (output, 0, false, 20);
             urlRequest = urlRequest.withPOSTData (output.toString());
